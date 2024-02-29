@@ -65,10 +65,37 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Giaovien.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Giaovien.Designer.cs">
+      <DependentUpon>Giaovien.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hocsinh.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hocsinh.Designer.cs">
+      <DependentUpon>Hocsinh.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UCThongtin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UCThongtin.Designer.cs">
+      <DependentUpon>UCThongtin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControlThongtin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControlThongtin.Designer.cs">
+      <DependentUpon>UserControlThongtin.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Hocsinh.resx">
+      <DependentUpon>Hocsinh.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -79,6 +106,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UCThongtin.resx">
+      <DependentUpon>UCThongtin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControlThongtin.resx">
+      <DependentUpon>UserControlThongtin.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
