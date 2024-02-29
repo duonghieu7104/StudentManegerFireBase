@@ -146,10 +146,15 @@ namespace WindowsFormsApp1
                 gioitinh = textBox3.Text,
                 diachi = textBox4.Text,
                 cmnd = textBox5.Text,
-                ngaythangnam  = formattedDate,
+                ngaythangnam = formattedDate,
                 phone = textBox6.Text,
                 mail = textBox9.Text
             };
+            if (data.id == "" || data.ten == "" || data.gioitinh == "" || data.diachi == "" || data.cmnd == "" || data.ngaythangnam == "" || data.phone == "" || data.mail == "")
+            {
+                MessageBox.Show("Hãy nhập đầy đủ thông tin");
+                return;
+            }
 
             if (!IsOverSeventeen(dateTimePicker1.Value))
             {
@@ -167,8 +172,87 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Sai định dạng SĐT");
                 return;
             }
-            SetResponse response = await client.SetTaskAsync(data.id+"/", data);
+            FirebaseResponse response = await client.GetTaskAsync(data.id);
+            if (response.Body != "null")
+            {
+                MessageBox.Show("ID hiện có trên DB");
+                return;
+            }
+            response = await client.SetTaskAsync(data.id+"/", data);
             Data result = response.ResultAs<Data>();
+        }
+
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            DateTime selectedDate = dateTimePicker1.Value;
+            string formattedDate = selectedDate.ToString("dd/MM/yyyy");
+
+            var data = new Data
+            {
+                id = textBox1.Text,
+                ten = textBox2.Text,
+                gioitinh = textBox3.Text,
+                diachi = textBox4.Text,
+                cmnd = textBox5.Text,
+                ngaythangnam = formattedDate,
+                phone = textBox6.Text,
+                mail = textBox9.Text
+            };
+            if (data.id == "" || data.ten == "" || data.gioitinh == "" || data.diachi == "" || data.cmnd == "" || data.ngaythangnam == "" || data.phone == "" || data.mail == "")
+            {
+                MessageBox.Show("Hãy nhập đầy đủ thông tin");
+                return;
+            }
+
+            if (!IsOverSeventeen(dateTimePicker1.Value))
+            {
+                MessageBox.Show("Người dùng chưa trên 17 tuổi.");
+                return;
+            }
+
+            if (!check_mail(data.mail))
+            {
+                MessageBox.Show("Sai định dạng mail");
+                return;
+            }
+            if (!IsValidPhoneNumber(data.phone))
+            {
+                MessageBox.Show("Sai định dạng SĐT");
+                return;
+            }
+            FirebaseResponse response = await client.GetTaskAsync(data.id);
+            if (response.Body == "null")
+            {
+                MessageBox.Show("ID không tồn tại");
+                return;
+            }
+            response = await client.SetTaskAsync(data.id + "/", data);
+            Data result = response.ResultAs<Data>();
+        }
+
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            DateTime selectedDate = dateTimePicker1.Value;
+            string formattedDate = selectedDate.ToString("dd/MM/yyyy");
+            var data = new Data
+            {
+                id = textBox1.Text,
+                ten = textBox2.Text,
+                gioitinh = textBox3.Text,
+                diachi = textBox4.Text,
+                cmnd = textBox5.Text,
+                ngaythangnam = formattedDate,
+                phone = textBox6.Text,
+                mail = textBox9.Text
+            };
+            FirebaseResponse response = await client.GetTaskAsync(data.id);
+            if (response.Body == "null")
+            {
+                MessageBox.Show("ID không tồn tại");
+                return;
+            }
+            client.Delete(data.id);
+            MessageBox.Show("Đã xóa ID: "+data.id);
         }
     }
 }
