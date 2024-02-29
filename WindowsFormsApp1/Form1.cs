@@ -13,12 +13,15 @@ using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
+        DataTable dt = new DataTable();
+
         IFirebaseConfig config = new FirebaseConfig
         {
             AuthSecret = "Ie36MKjoG33KIISQaOIXiJTx1ur1Zt2wsyS9tnBQ",
@@ -38,9 +41,21 @@ namespace WindowsFormsApp1
 
             if (client != null )
             {
-                MessageBox.Show("Connected");
+                MessageBox.Show("Đã kết nối với Data Base");
             }
+
+            dt.Columns.Add("ID");
+            dt.Columns.Add("Ho va ten");
+            dt.Columns.Add("Gioi tinh");
+            dt.Columns.Add("Dia chi");
+            dt.Columns.Add("CMND");
+            dt.Columns.Add("Ngay thang nam");
+            dt.Columns.Add("Phone");
+            dt.Columns.Add("Mail"); 
+            
+            dataGridView1.DataSource = dt;
         }
+
 
         private void label3_Click(object sender, EventArgs e)
         {
@@ -172,13 +187,13 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Sai định dạng SĐT");
                 return;
             }
-            FirebaseResponse response = await client.GetTaskAsync(data.id);
+            FirebaseResponse response = await client.GetTaskAsync("data/"+data.id);
             if (response.Body != "null")
             {
                 MessageBox.Show("ID hiện có trên DB");
                 return;
             }
-            response = await client.SetTaskAsync(data.id+"/", data);
+            response = await client.SetTaskAsync("data/"+data.id+"/", data);
             Data result = response.ResultAs<Data>();
         }
 
@@ -220,13 +235,13 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Sai định dạng SĐT");
                 return;
             }
-            FirebaseResponse response = await client.GetTaskAsync(data.id);
+            FirebaseResponse response = await client.GetTaskAsync("data/"+data.id);
             if (response.Body == "null")
             {
                 MessageBox.Show("ID không tồn tại");
                 return;
             }
-            response = await client.SetTaskAsync(data.id + "/", data);
+            response = await client.SetTaskAsync("data/" + data.id + "/", data);
             Data result = response.ResultAs<Data>();
         }
 
@@ -245,14 +260,80 @@ namespace WindowsFormsApp1
                 phone = textBox6.Text,
                 mail = textBox9.Text
             };
-            FirebaseResponse response = await client.GetTaskAsync(data.id);
+            FirebaseResponse response = await client.GetTaskAsync("data/"+data.id);
             if (response.Body == "null")
             {
                 MessageBox.Show("ID không tồn tại");
                 return;
             }
-            client.Delete(data.id);
+            client.Delete("data/"+data.id);
             MessageBox.Show("Đã xóa ID: "+data.id);
         }
+
+        private async void button4_Click(object sender, EventArgs e)
+        {
+            var id = textBox1.Text;
+            FirebaseResponse response = await client.GetTaskAsync("data/"+id);
+            if (response.Body == "null")
+            {
+                MessageBox.Show("ID không tồn tại");
+                return;
+            }
+            Data obj = response.ResultAs<Data>();
+            textBox1.Text = obj.id;
+            textBox2.Text = obj.ten;
+            textBox3.Text = obj.gioitinh;
+            textBox4.Text = obj.diachi;
+            textBox5.Text = obj.cmnd;
+            dateTimePicker1.Value = DateTime.ParseExact(obj.ngaythangnam, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+            textBox6.Text = obj.phone;
+            textBox9.Text = obj.mail;
+        }
+
+        private async void button5_Click(object sender, EventArgs e)
+        {
+            dt.Rows.Clear();
+
+            FirebaseResponse response = await client.GetTaskAsync("data/");
+            if (response.Body != "null")
+            {
+                List<Data> dataList = JsonConvert.DeserializeObject<List<Data>>(response.Body).Where(data => data != null).ToList();
+
+                foreach (Data data in dataList)
+                {
+                    DataRow row = dt.NewRow();
+                    row["ID"] = data.id;
+                    row["Ho va ten"] = data.ten;
+                    row["Gioi tinh"] = data.gioitinh;
+                    row["Dia chi"] = data.diachi;
+                    row["CMND"] = data.cmnd;
+                    row["Ngay thang nam"] = data.ngaythangnam;
+                    row["Phone"] = data.phone;
+                    row["Mail"] = data.mail;
+
+                    dt.Rows.Add(row);
+                }
+            }
+            
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex != -1)
+            {
+                DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
+ 
+
+                textBox1.Text = row.Cells[0].Value.ToString();
+                textBox2.Text = row.Cells[1].Value.ToString();
+                textBox3.Text = row.Cells[2].Value.ToString();
+                textBox4.Text = row.Cells[3].Value.ToString();
+                textBox5.Text = row.Cells[4].Value.ToString();
+                dateTimePicker1.Value = DateTime.ParseExact(row.Cells[5].Value.ToString(), "dd-MM-yyyy", CultureInfo.InvariantCulture);
+                textBox6.Text = row.Cells[6].Value.ToString();
+                textBox9.Text = row.Cells[7].Value.ToString();
+            }
+        }
+
     }
 }
